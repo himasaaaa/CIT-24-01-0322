@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Note Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0d0714;
+            --bg-card: #170c27;
+            --bg-input: #23123a;
+            --primary: #9333ea;
+            --primary-hover: #a855f7;
+            --secondary: #c084fc;
+            --accent: #e9d5ff;
+            --text-main: #f3e8ff;
+            --text-muted: #a78bfa;
+            --border-color: #3b1966;
+            --danger: #f43f5e;
+            --success: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, rgba(23, 12, 39, 0.95), rgba(13, 7, 20, 0.98));
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #a855f7, #6b21a8);
+            color: #ffffff;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+        }
+
+        .brand h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ffffff, #e9d5ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(168, 85, 247, 0.12);
+            color: #d8b4fe;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #c084fc;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 850px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-header {
+            margin-bottom: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.25);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            background: linear-gradient(135deg, #9333ea, #7e22ce);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(147, 51, 234, 0.45);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .search-bar {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .note-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            position: relative;
+        }
+
+        .note-card:hover {
+            transform: translateY(-3px);
+            border-color: #a855f7;
+        }
+
+        .note-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .note-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        .note-tag {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-Lecture { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4); }
+        .tag-Assignment { background: rgba(236, 72, 153, 0.2); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4); }
+        .tag-Exam { background: rgba(147, 51, 234, 0.4); color: #ffffff; border: 1px solid #c084fc; }
+        .tag-Quick { background: rgba(192, 132, 252, 0.15); color: #d8b4fe; border: 1px solid rgba(192, 132, 252, 0.3); }
+
+        .note-course {
+            font-size: 0.8rem;
+            color: #c084fc;
+            font-weight: 500;
+            margin-bottom: 0.6rem;
+        }
+
+        .note-body {
+            font-size: 0.9rem;
+            color: #e9d5ff;
+            line-height: 1.5;
+            margin-bottom: 1.2rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .note-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(168, 85, 247, 0.15);
+            padding-top: 0.75rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            cursor: pointer;
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-delete:hover {
+            color: #ffffff;
+            background: rgba(244, 63, 94, 0.2);
+            border-color: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.4;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon">📚</div>
+                <h1>Student Notes System</h1>
+            </div>
+            <div class="status-badge" id="statusBadge">
+                <span class="status-dot"></span>
+                <span id="statusText">Services Active</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="grid-layout">
+            <!-- Sidebar / Create Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📝 New Note</h2>
+                </div>
+                <form id="noteForm">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" class="form-control" placeholder="e.g. Docker Volumes & Networking" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="course">Course Code / Subject</label>
+                        <input type="text" id="course" class="form-control" placeholder="e.g. CCS3308" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" class="form-control">
+                            <option value="Lecture">Lecture Note</option>
+                            <option value="Assignment">Assignment</option>
+                            <option value="Exam">Exam Prep</option>
+                            <option value="Quick">Quick Idea</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content">Note Content</label>
+                        <textarea id="content" class="form-control" placeholder="Enter key points, code snippets, or reminders..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <span>Save Note to Database</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Notes List -->
+            <div>
+                <div class="search-bar">
+                    <input type="text" id="searchInput" class="form-control" placeholder="🔍 Search notes by title, course, or content...">
+                </div>
+
+                <div class="card-header" style="margin-bottom: 1rem;">
+                    <h2 class="card-title">Saved Notes (<span id="noteCount">0</span>)</h2>
+                </div>
+
+                <div class="notes-grid" id="notesGrid">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>CCS3308 - Virtualization and Containers | Docker 2-Service Architecture (Web + MongoDB Volume)</p>
+    </footer>
+
+    <script>
+        let allNotes = [];
+
+        async function fetchHealth() {
+            try {
+                const res = await fetch('/api/health');
+                const data = await res.json();
+                const text = document.getElementById('statusText');
+                if (data.database === 'connected') {
+                    text.innerText = 'Services & Database Online';
+                } else {
+                    text.innerText = 'Database Connecting...';
+                }
+            } catch (err) {
+                document.getElementById('statusText').innerText = 'Offline';
+            }
+        }
+
+        async function loadNotes() {
+            try {
+                const res = await fetch('/api/notes');
+                const data = await res.json();
+                if (data.success) {
+                    allNotes = data.notes;
+                    renderNotes(allNotes);
+                }
+            } catch (err) {
+                console.error("Failed to fetch notes:", err);
+            }
+        }
+
+        function renderNotes(notes) {
+            const grid = document.getElementById('notesGrid');
+            const countEl = document.getElementById('noteCount');
+            countEl.innerText = notes.length;
+
+            if (notes.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <p>No student notes added yet.<br>Use the form on the left to create your first note!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = notes.map(note => `
+                <div class="note-card">
+                    <div>
+                        <div class="note-header">
+                            <span class="note-title">${escapeHtml(note.title)}</span>
+                            <span class="note-tag tag-${note.category}">${note.category}</span>
+                        </div>
+                        <div class="note-course">📖 ${escapeHtml(note.course)}</div>
+                        <div class="note-body">${escapeHtml(note.content)}</div>
+                    </div>
+                    <div class="note-footer">
+                        <span>🕒 ${note.created_at}</span>
+                        <button class="btn-delete" onclick="deleteNote('${note.id}')" title="Delete Note">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('noteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const course = document.getElementById('course').value;
+            const category = document.getElementById('category').value;
+            const content = document.getElementById('content').value;
+
+            try {
+                const res = await fetch('/api/notes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, course, category, content })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('noteForm').reset();
+                    loadNotes();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                alert('Failed to save note');
+            }
+        });
+
+        async function deleteNote(id) {
+            if (!confirm('Are you sure you want to delete this note?')) return;
+            try {
+                const res = await fetch(`/api/notes/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    loadNotes();
+                }
+            } catch (err) {
+                alert('Failed to delete note');
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allNotes.filter(n => 
+                n.title.toLowerCase().includes(query) ||
+                n.course.toLowerCase().includes(query) ||
+                n.content.toLowerCase().includes(query)
+            );
+            renderNotes(filtered);
+        });
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        fetchHealth();
+        loadNotes();
+        setInterval(fetchHealth, 5000);
+    </script>
+</body>
+</html>

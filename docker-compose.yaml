@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: student-notes-web
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/studentdb
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    networks:
+      - student_notes_net
+
+  mongodb:
+    image: mongo:latest
+    container_name: student-notes-db
+    ports:
+      - "27017:27017"
+    volumes:
+      - student_notes_data:/data/db
+    restart: unless-stopped
+    networks:
+      - student_notes_net
+
+volumes:
+  student_notes_data:
+    name: student_notes_data
+
+networks:
+  student_notes_net:
+    name: student_notes_net
